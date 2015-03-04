@@ -117,7 +117,8 @@ Implement Monte-Carlo integration with the following function.
 Your implementation should run the Monte-Carlo algorithm several times and return the average of those runs.
 \begin{lstlisting}
 def mc_int(f, mins, maxs, numPoints=500, numIters=100):
-    '''Use Monte-Carlo integration to approximate the integral of f
+    '''
+    Use Monte-Carlo integration to approximate the integral of f
     on the box defined by mins and maxs.
     
     INPUTS:
@@ -149,6 +150,33 @@ Then multiply this array by the appropriate vector to stretch it the right amoun
 Finally, add the appropriate vector to shift the points to the right location.
 \item You can evaluate \li{f} on an array of points in one line using \li{np.apply_along_axis()}.
 \end{enumerate}
+\end{problem}
+
+\begin{problem}
+We have already claimed that Monte Carlo integration is more effective than other numerical integration techniques in higher dimensions. We use the SciPy function \li{scipy.integrate.nquad} to demonstrate this. Compare the performance of \li{scipy.integrate.nquad} to your \li{mc_int} function using $f(x)=\prod_{i=1}^{n} 2x_i$ on $[0,1]\times \dotsb \times [0,1]$, for $n=1,2,3$ and 4. Set \li{numPoints=50}. We demonstrate below how to use the \li{nquad} function.
+
+\begin{lstlisting}
+# nquad expects a function with n arguments. We must therefore use a * to
+# unpack the array x, and then convert it back to an array inside of f.
+def f(*x):
+    return np.prod(2*np.array(x))
+\end{lstlisting}
+
+We are now ready to call \li{mc_int} and \li{nquad} on \li{f}.
+
+\begin{lstlisting}
+>>> from scipy.integrate import nquad
+>>> n = 2
+>>> mins = np.zeros(n)
+>>> maxs = np.ones(n)
+>>> ranges = [mins[i], maxs[i] for i in xrange(n)]
+
+>>> %timeit nquad(f, ranges)
+100 loops, best of 3: 13.9 ms per loop
+>>> %timeit mc_int(f, mins, maxs, numPoints=50)
+1 loops, best of 3: 296 ms per loop
+
+\end{lstlisting}
 \end{problem}
 
 \begin{comment}
